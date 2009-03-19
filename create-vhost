@@ -1,0 +1,13 @@
+#!/bin/sh
+touch /etc/apache2/sites-available/test-site
+cat >> /etc/apache2/sites-available/test-site <<-EOF
+<VirtualHost *:80> 
+  ServerName whatever.com 
+  DocumentRoot /var/apps/test-site/public 
+</VirtualHost>
+EOF
+
+ln -nfs /etc/apache2/sites-available/test-site /etc/apache2/sites-enabled/test-site
+/etc/init.d/apache2 restart
+
+
