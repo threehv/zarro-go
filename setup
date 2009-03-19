@@ -42,6 +42,7 @@ cat >> /etc/apache2/conf.d/passenger <<-EOF
 LoadModule passenger_module /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.1.2/ext/apache2/mod_passenger.so
 PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.1.2
 PassengerRuby /opt/ruby/bin/ruby
+PassengerMaxInstancesPerApp 2
 EOF
 
 sudo rm /var/www/index.html
