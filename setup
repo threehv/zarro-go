@@ -44,15 +44,32 @@ PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.1.2
 PassengerRuby /opt/ruby/bin/ruby
 EOF
 
-touch /etc/apache2/sites-available/test-site
-cat >> /etc/apache2/sites-available/test-site <<-EOF
-<VirtualHost *:80> 
-  ServerName whatever.com 
-  DocumentRoot /var/apps/test-site/public 
+sudo rm /var/www/index.html
+sudo touch /var/www/index.html
+sudo cat >> /var/www/index.html <<-EOF
+<html> <body> <h1> Server is go! </h1> </body> </html>
+EOF
+
+sudo rm /etc/apache2/sites-enabled/000-default
+sudo touch /etc/apache2/sites-enabled/000-default
+sudo cat >> /etc/apache2/sites-enabled/000-default <<-EOF
+<VirtualHost *:80>
+  ServerName localhost
+  DocumentRoot /var/www
+
+  <Directory "/var/www">
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  ErrorLog /var/log/web/default.err
+  CustomLog /var/log/web/default.log combined
+
 </VirtualHost>
 EOF
 
-ln -nfs /etc/apache2/sites-available/test-site /etc/apache2/sites-enabled/test-site
-/etc/init.d/apache2 restart
+sudo /etc/init.d/apache2 restart
 
 
