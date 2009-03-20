@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # system stuff
-apt-get --yes --force-yes upgrade 
 apt-get --yes --force-yes update
+apt-get --yes --force-yes upgrade 
 apt-get --yes --force-yes build-essential
 
 # apache

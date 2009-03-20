@@ -1,4 +1,63 @@
-#!/bin/sh
+#!/usr/bin/env ruby
+
+begin
+  require 'rubygems'
+rescue LoadError
+  # no rubygems to load, so we fail silently
+end
+
+require 'optparse'
+
+@options = {}
+
+def has_required_options?
+  [@server].all?
+end
+
+opts = OptionParser.new do |opts|
+  opts.banner = "Configure apache to serve your rails application\n"
+  opts.banner << "Usage: #{opts.program_name} [options] <directory_name>\n\n"
+
+  opts.on("-n APPLICATION_NAME", "--name APPLICATION_NAME",
+    "Name of application (a short useful",
+    "name for the app such as 'myforum')",
+    "(defaults to the short name of the server)\n"
+  ) { |value| @application = value }
+  
+  opts.on("-d DOMAIN_NAME", "--domain DOMAIN_NAME",
+    "Domain name for application",
+    "(e.g: www.example.com)",
+    "(defaults to the server name)\n"
+  ) { |value| @domain = value }
+  
+  opts.on("-i SERVER_NAME", "--server SERVER_NAME",
+    "Hostname or IP address of your",
+    "Brightbox virtual server",
+    "(e.g: example-001.vm.brightbox.net)\n"
+  ) { |value| @server = value }
+  
+  opts.on("-a TYPE", "--app TYPE", [:mongrel, :passenger],
+    "App server type, mongrel or passenger"
+    ) { |value| @app_server = value }
+
+  begin
+    opts.parse!(ARGV)
+    raise OptionParser::ParseError,
+      "You must supply the server name" unless has_required_options?
+  rescue OptionParser::ParseError => e
+    warn e.message
+    puts opts
+    exit 1
+  end
+end
+
+
+abort "Please specify the directory containing the Rails app, e.g. '#{opts.program_name} .'" if ARGV.empty?
+abort "Too many arguments; please provide a single directory name." unless ARGV.length == 1
+abort "'#{ARGV.first}' does not exist." unless File.exists?(ARGV.first)
+abort "'#{ARGV.first}' is not a directory." unless File.directory?(ARGV.first)
+
+
 touch /etc/apache2/sites-available/test-site
 cat >> /etc/apache2/sites-available/test-site <<-EOF
 <VirtualHost *:80> 
