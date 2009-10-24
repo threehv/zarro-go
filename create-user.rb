@@ -57,7 +57,7 @@ class UserCreator
 
     log.info "...setting password to #{password}"
     double_password = "#{password}\n#{password}"
-    result = `echo #{double_password} | passwd ors-#{username}`
+    result = `echo '#{double_password}' | passwd ors-#{username}`
     raise result unless result == ''
 
     log.info "...user ors-#{username} created"
