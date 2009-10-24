@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # (c) 2009 3hv Limited 
 # create user - creates a user account and mysql account for zarro hosting
-
 require 'optparse'
 require 'logger'
 
@@ -50,11 +49,11 @@ class UserCreator
     
     log.info "...creating user"
     result = `useradd #{switches} ors-#{username}`
-    raise result unless result.blank?
+    raise result unless result == ''
 
     log.info "...setting password"
     result = `passwd ors-#{username}`
-    raise result unless result.blank?
+    raise result unless result = ''
 
     log.info "...user ors-#{username} created"
   end
