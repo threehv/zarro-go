@@ -57,7 +57,7 @@ class UserCreator
 
     log.info "...setting password to #{password}"
     double_password = "#{password}\n#{password}"
-    result = `echo '#{double_password}' | passwd ors-#{username}`
+    result = `echo '#{double_password}' | passwd -q ors-#{username}`
     raise result unless result == ''
 
     log.info "...user ors-#{username} created"
@@ -70,7 +70,7 @@ class UserCreator
 		
 		log.info "...adding ors-#{username} to mysql"
 		result = `mysql --defaults-file=mysql.cnf -e \"#{sql}\" `
-		log.info "...with result: #{result}"
+    raise result unless result == ''
 		log.info "...MySQL password: #{password}"
   end
 end
