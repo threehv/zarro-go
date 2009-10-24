@@ -60,7 +60,7 @@ class UserCreator
   
   def add_mysql_user
     password = `pwgen 12 1`.strip
-		sql = "GRANT ALL PRIVILEGES ON \`ors-#{username}%\`.* "
+		sql = "GRANT ALL PRIVILEGES ON \\`ors-#{username}%\\`.* "
 		sql << "TO 'ors-#{username}'@'localhost' "
 		sql << "IDENTIFIED BY '#{password}';"
 		
