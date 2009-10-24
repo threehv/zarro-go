@@ -3,7 +3,6 @@
 # create user - creates a user account and mysql account for zarro hosting
 
 require 'optparse'
-require 'rujitsu'
 
 class UserCreator
   attr_reader :username, :shell, :log
@@ -60,7 +59,7 @@ class UserCreator
   end
   
   def add_mysql_user
-    password = 8.random_characters
+    password = `pwgen 12 1`
 		sql = "GRANT ALL PRIVILEGES ON \\`ors-#{username}\\_%\\`.* "
 		sql << "TO 'ors-#{username}'@'localhost' "
 		sql << "IDENTIFIED BY '#{password}';"
