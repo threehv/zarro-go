@@ -59,7 +59,7 @@ class UserCreator
   end
   
   def add_mysql_user
-    password = `pwgen 12 1`
+    password = `pwgen 12 1`.strip
 		sql = "GRANT ALL PRIVILEGES ON \`ors-#{username}%\`.* "
 		sql << "TO 'ors-#{username}'@'localhost' "
 		sql << "IDENTIFIED BY '#{password}';"
@@ -67,6 +67,7 @@ class UserCreator
 		log.info "...adding ors-#{username} to mysql"
 		result = `mysql --defaults-file=mysql.cnf -e \"#{sql}\" `
 		log.info "...with result: #{result}"
+		log.info "...MySQL password: #{password}"
   end
 end
 
