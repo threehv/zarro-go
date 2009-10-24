@@ -5,13 +5,16 @@ require 'optparse'
 require 'logger'
 
 class UserCreator
-  attr_reader :username, :shell, :log
+  attr_reader :username, :password, :shell, :log
   
   def initialize
     parser = OptionParser.new do | options | 
       options.banner = "Usage: create-user.rb [options]"
       options.on '-u', '--user USERNAME', 'Specify the new account name' do | value | 
         @username = value 
+      end
+      options.on '-p', '--password PASSWORD', 'Specify a password to use (defaults to randomly generated)' do | value |
+        @password = value
       end
       options.on '-s', '--shell SHELL', 'Specify the shell (defaults to /bin/bash)' do | value | 
         @shell = value
@@ -31,6 +34,7 @@ class UserCreator
       exit 1
     end
     @shell ||= '/bin/bash'
+    @password ||= `pwgen 12 1`.strip
   end
   
   def go!
@@ -51,15 +55,15 @@ class UserCreator
     result = `useradd #{switches} ors-#{username}`
     raise result unless result == ''
 
-    log.info "...setting password"
-    result = `passwd ors-#{username}`
+    log.info "...setting password to #{password}"
+    double_password = "#{password}\n#{password}"
+    result = `echo #{double_password} | passwd ors-#{username}`
     raise result unless result == ''
 
     log.info "...user ors-#{username} created"
   end
   
   def add_mysql_user
-    password = `pwgen 12 1`.strip
 		sql = "GRANT ALL PRIVILEGES ON \\`ors-#{username}%\\`.* "
 		sql << "TO 'ors-#{username}'@'localhost' "
 		sql << "IDENTIFIED BY '#{password}';"
