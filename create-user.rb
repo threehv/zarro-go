@@ -37,7 +37,7 @@ class UserCreator
     add_unix_user
     add_mysql_user
     return 0
-  rescue Exception => ex
+  rescue Object => ex
     log.error "...failed: #{ex}"
     exit 1
   end
@@ -53,14 +53,14 @@ class UserCreator
 
     log.info "...setting password"
     result = `passwd ors-#{username}`
-    raise result unless result = ''
+    raise result unless result == ''
 
     log.info "...user ors-#{username} created"
   end
   
   def add_mysql_user
     password = `pwgen 12 1`
-		sql = "GRANT ALL PRIVILEGES ON \\`ors-#{username}\\_%\\`.* "
+		sql = "GRANT ALL PRIVILEGES ON \`ors-#{username}%\`.* "
 		sql << "TO 'ors-#{username}'@'localhost' "
 		sql << "IDENTIFIED BY '#{password}';"
 		
