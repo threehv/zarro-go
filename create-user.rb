@@ -3,6 +3,7 @@
 # create user - creates a user account and mysql account for zarro hosting
 
 require 'optparse'
+require 'logger'
 
 class UserCreator
   attr_reader :username, :shell, :log
@@ -26,7 +27,7 @@ class UserCreator
     @log = Logger.new(STDOUT)
     
     log.info "Zarro create-user - starting..."
-    if @username.blank? 
+    if @username.nil? 
       log.error "...failed: no username supplied"
       exit 1
     end
