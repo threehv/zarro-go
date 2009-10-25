@@ -2,6 +2,7 @@
 # (c) 2009 3hv Limited 
 # create user - creates a user account and mysql account for zarro hosting
 require 'optparse'
+require 'yaml'
 require 'logger'
 
 class UserCreator
@@ -71,11 +72,11 @@ class UserCreator
   end
   
   def add_mysql_user
-		sql = "GRANT ALL PRIVILEGES ON \\`ors-#{username}%\\`.* "
-		sql << "TO 'ors-#{username}'@'localhost' "
+		sql = "GRANT ALL PRIVILEGES ON \\`#{username}%\\`.* "
+		sql << "TO '#{username}'@'localhost' "
 		sql << "IDENTIFIED BY '#{password}';"
 		
-		log.info "...adding ors-#{username} to mysql"
+		log.info "...adding #{username} to mysql"
 		result = `mysql --defaults-file=mysql.cnf -e \"#{sql}\" `
     raise result unless result == ''
 		log.info "...MySQL password: #{password}"
