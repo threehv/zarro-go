@@ -5,9 +5,11 @@ require 'optparse'
 require 'logger'
 
 class UserCreator
-  attr_reader :username, :password, :shell, :log
+  attr_reader :username, :password, :shell, :log, :details
   
   def initialize
+    @details = {}
+    
     parser = OptionParser.new do | options | 
       options.banner = "Usage: create-user.rb [options]"
       options.on '-u', '--user USERNAME', 'Specify the new account name' do | value | 
@@ -33,6 +35,7 @@ class UserCreator
       log.error "...failed: no username supplied"
       exit 1
     end
+
     @shell ||= '/bin/bash'
     @password ||= `pwgen 12 1`.strip
   end
@@ -40,6 +43,7 @@ class UserCreator
   def go!
     add_unix_user
     add_mysql_user
+    write_details
     return 0
   rescue Object => ex
     log.error "...failed: #{ex}"
@@ -60,6 +64,9 @@ class UserCreator
     result = `echo '#{double_password}' | passwd -q zr-#{username}`
     raise result unless result == ''
 
+    details[:username] = "zr-#{username}"
+    details[:password] = password
+
     log.info "...user zr-#{username} created"
   end
   
@@ -72,6 +79,12 @@ class UserCreator
 		result = `mysql --defaults-file=mysql.cnf -e \"#{sql}\" `
     raise result unless result == ''
 		log.info "...MySQL password: #{password}"
+  end
+  
+  def write_details
+    File.open("/home/zr-#{username}/.zarro.yml", 'w') do | file | 
+      YAML.dump details, file 
+    end
   end
 end
 
