@@ -39,11 +39,13 @@ class UserCreator
 
     @shell ||= '/bin/bash'
     @password ||= `pwgen 12 1`.strip
+    details[username] ||= {}
   end
   
   def go!
     add_unix_user
     add_mysql_user
+    add_rabbit_user
     write_details
     return 0
   rescue Object => ex
@@ -65,8 +67,7 @@ class UserCreator
     result = `echo '#{double_password}' | passwd -q zr-#{username}`
     raise result unless result == ''
 
-    details[:username] = "zr-#{username}"
-    details[:password] = password
+    details[username][:password] = password
 
     log.info "...user zr-#{username} created"
   end
@@ -82,9 +83,16 @@ class UserCreator
 		log.info "...MySQL password: #{password}"
   end
   
+  def add_rabbit_user
+    log.info "...adding zr-#{username} to RabbitMQ"
+    result = `rabbitmq-ctl add_user zr-#{username} #{password}`
+    raise result unless result = ""
+    log.info "...RabbitMQ user added with password #{password}"
+  end 
+  
   def write_details
     File.open("~/.zarro.yml", 'w') do | file | 
-      YAML.dump { username.to_sym => details }, file 
+      YAML.dump details, file 
     end
   end
 end
