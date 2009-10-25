@@ -21,6 +21,7 @@ apt-get --yes --force-yes install libmysqlclient15-dev
 apt-get --yes --force-yes install monit
 apt-get --yes --force-yes install pwgen
 mkdir /etc/monit.d
+
 wget http://rubyforge.org/frs/download.php/64475/ruby-enterprise-1.8.7-20090928.tar.gz
 tar xzvf ruby-enterprise-1.8.7-20090928.tar.gz
 ./ruby-enterprise-1.8.7-20090928/installer --auto /opt/ruby

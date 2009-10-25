@@ -52,15 +52,15 @@ class UserCreator
     switches += ' --create-home '
     
     log.info "...creating user"
-    result = `useradd #{switches} ors-#{username}`
+    result = `useradd #{switches} zr-#{username}`
     raise result unless result == ''
 
     log.info "...setting password to #{password}"
     double_password = "#{password}\n#{password}"
-    result = `echo '#{double_password}' | passwd -q ors-#{username}`
+    result = `echo '#{double_password}' | passwd -q zr-#{username}`
     raise result unless result == ''
 
-    log.info "...user ors-#{username} created"
+    log.info "...user zr-#{username} created"
   end
   
   def add_mysql_user
