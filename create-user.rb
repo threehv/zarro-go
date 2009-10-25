@@ -9,7 +9,7 @@ class UserCreator
   attr_reader :username, :password, :shell, :log, :details
   
   def initialize
-    @details = {}
+    @details = YAML.load "~/.zarro.yml"
     
     parser = OptionParser.new do | options | 
       options.banner = "Usage: create-user.rb [options]"
@@ -83,8 +83,8 @@ class UserCreator
   end
   
   def write_details
-    File.open("/home/zr-#{username}/.zarro.yml", 'w') do | file | 
-      YAML.dump details, file 
+    File.open("~/.zarro.yml", 'w') do | file | 
+      YAML.dump { username.to_sym => details }, file 
     end
   end
 end
