@@ -2,15 +2,12 @@
 # (c) 2009 3hv Limited 
 # create user - creates a user account and mysql account for zarro hosting
 require 'optparse'
-require 'yaml'
 require 'logger'
 
 class UserCreator
-  attr_reader :username, :password, :shell, :log, :details
+  attr_reader :username, :password, :shell, :log
   
   def initialize
-    @details = YAML.load "~/.zarro.yml"
-    
     parser = OptionParser.new do | options | 
       options.banner = "Usage: create-user.rb [options]"
       options.on '-u', '--user USERNAME', 'Specify the new account name' do | value | 
@@ -39,14 +36,12 @@ class UserCreator
 
     @shell ||= '/bin/bash'
     @password ||= `pwgen 12 1`.strip
-    details[username] ||= {}
   end
   
   def go!
     add_unix_user
     add_mysql_user
     add_rabbit_user
-    write_details
     return 0
   rescue Object => ex
     log.error "...failed: #{ex}"
@@ -66,8 +61,6 @@ class UserCreator
     double_password = "#{password}\n#{password}"
     result = `echo '#{double_password}' | passwd -q zr-#{username}`
     raise result unless result == ''
-
-    details[username][:password] = password
 
     log.info "...user zr-#{username} created"
   end
@@ -90,11 +83,6 @@ class UserCreator
     log.info "...RabbitMQ user added with password #{password}"
   end 
   
-  def write_details
-    File.open("~/.zarro.yml", 'w') do | file | 
-      YAML.dump details, file 
-    end
-  end
 end
 
 creator = UserCreator.new
