@@ -54,15 +54,15 @@ class UserCreator
     switches += ' --create-home '
     
     log.info "...creating user"
-    result = `useradd #{switches} zr-#{username}`
+    result = `useradd #{switches} #{username}`
     raise result unless result == ''
 
     log.info "...setting password to #{password}"
     double_password = "#{password}\n#{password}"
-    result = `echo '#{double_password}' | passwd -q zr-#{username}`
+    result = `echo '#{double_password}' | passwd -q #{username}`
     raise result unless result == ''
 
-    log.info "...user zr-#{username} created"
+    log.info "...user #{username} created"
   end
   
   def add_mysql_user
@@ -77,8 +77,8 @@ class UserCreator
   end
   
   def add_rabbit_user
-    log.info "...adding zr-#{username} to RabbitMQ"
-    result = `rabbitmq-ctl add_user zr-#{username} #{password}`
+    log.info "...adding #{username} to RabbitMQ"
+    result = `rabbitmq-ctl add_user #{username} #{password}`
     raise result unless result = ""
     log.info "...RabbitMQ user added with password #{password}"
   end 

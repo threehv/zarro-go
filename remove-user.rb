@@ -64,5 +64,5 @@ class UserRemover
   
 end
 
-creator = UserCreator.new
-exit creator.go!
+remover = UserRemover.new
+exit remover.go!
