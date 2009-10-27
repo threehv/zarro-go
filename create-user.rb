@@ -41,7 +41,6 @@ class UserCreator
   def go!
     add_unix_user
     add_mysql_user
-    add_rabbit_user
     return 0
   rescue Object => ex
     log.error "...failed: #{ex}"
@@ -75,13 +74,6 @@ class UserCreator
     raise result unless result == ''
 		log.info "...MySQL password: #{password}"
   end
-  
-  def add_rabbit_user
-    log.info "...adding #{username} to RabbitMQ"
-    result = `rabbitmq-ctl add_user #{username} #{password}`
-    raise result unless result = ""
-    log.info "...RabbitMQ user added with password #{password}"
-  end 
   
 end
 
