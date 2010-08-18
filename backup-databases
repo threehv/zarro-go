@@ -1,0 +1,4 @@
+mysqldump -u root --password=PASSWORD --all-databases > /home/threehv/dbbackup/backup.sql
+gzip -f /home/threehv/dbbackup/backup.sql
+#mysqldump -u root --password=PASSWORD DATABASE > /home/threehv/dbbackup/BACKUP.sql
+gzip -f /home/threehv/dbbackup/BACKUP.sql

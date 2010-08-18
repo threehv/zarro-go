@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'logger'
+require 'aws/s3'
+require 'find'
+
+log = Logger.new '/home/threehv/backup/s3.log', 'weekly'
+
+AWS::S3::Base.establish_connection!(:access_key_id => 'ACCESS', :secret_access_key => 'SECRET')
+log.info 'Connected'
+
+threshold = Time.now - (1440 * 60)
+
+folders = [FOLDERS]
+folders.each do | folder | 
+  begin
+    Find.find(folder) do | path | 
+      if FileTest.directory? path
+        next
+      else
+        file = File.new path
+        log.info "Looking at #{path}"
+        if !AWS::S3::S3Object.exists?(path, 'BUCKET') || (file.mtime > threshold)
+          AWS::S3::S3Object.store(path, open(path), 'BUCKET', :access => :private)
+          log.info "...storing #{path}"
+        end
+      end
+    end
+  rescue Exception => ex
+    log.error "ERROR: #{ex}"
+  end
+end
+
