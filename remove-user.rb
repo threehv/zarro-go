@@ -34,7 +34,6 @@ class UserRemover
     remove_unix_user
     remove_mysql_user
     remove_rabbit_user
-    write_details
     return 0
   rescue Object => ex
     log.error "...failed: #{ex}"
@@ -43,8 +42,8 @@ class UserRemover
   
   def remove_unix_user
     log.info "...removing unix user"
-    `userdel zr-#{username}`
-    log.info "...user zr-#{username} removed"
+    `userdel #{username}`
+    log.info "...user #{username} removed"
   end
   
   def remove_mysql_user
@@ -56,10 +55,10 @@ class UserRemover
   end
   
   def remove_rabbit_user
-    log.info "...removing zr-#{username} from RabbitMQ"
-    result = `rabbitmq-ctl delete_user zr-#{username}`
+    log.info "...removing #{username} from RabbitMQ"
+    result = `rabbitmq-ctl delete_user #{username}`
     raise result unless result = ""
-    log.info "...RabbitMQ user zr-#{username} removed"
+    log.info "...RabbitMQ user #{username} removed"
   end 
   
 end

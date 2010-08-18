@@ -10,6 +10,8 @@ apt-get --yes --force-yes install build-essential
 apt-get --yes --force-yes install apache2
 
 # ruby enterprise edition
+apt-get --yes --force-yes install ruby1.8-dev
+apt-get --yes --force-yes install libopenssl-ruby1.8
 apt-get --yes --force-yes install zlib1g-dev
 apt-get --yes --force-yes install libssl-dev
 apt-get --yes --force-yes install libreadline5-dev
@@ -26,12 +28,13 @@ wget http://rubyforge.org/frs/download.php/64475/ruby-enterprise-1.8.7-20090928.
 tar xzvf ruby-enterprise-1.8.7-20090928.tar.gz
 ./ruby-enterprise-1.8.7-20090928/installer --auto /opt/ruby
 
-ln -nfs /opt/ruby/bin/ruby /bin/ruby
-ln -nfs /opt/ruby/bin/gem /bin/gem
-ln -nfs /opt/ruby/bin/rake /bin/rake
-ln -nfs /opt/ruby/bin/irb /bin/irb
+ln -nfs /opt/ruby/bin/ruby /usr/bin/ruby
+ln -nfs /opt/ruby/bin/gem /usr/bin/gem
+ln -nfs /opt/ruby/bin/rake /usr/bin/rake
+ln -nfs /opt/ruby/bin/irb /usr/bin/irb
 
 # update rails
+gem install mysql --no-ri --no-rdoc
 gem install rails --no-ri --no-rdoc
 ln -nfs /opt/ruby/bin/rails /bin/rails
 
@@ -49,8 +52,8 @@ ln -nfs /opt/ruby/bin/passenger-status /bin/passenger-status
 
 touch /etc/apache2/conf.d/passenger
 cat >> /etc/apache2/conf.d/passenger <<-EOF
-LoadModule passenger_module /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
-PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.2.5
+LoadModule passenger_module /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.2.15/ext/apache2/mod_passenger.so
+PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.2.15
 PassengerRuby /opt/ruby/bin/ruby
 PassengerMaxInstancesPerApp 2
 EOF
