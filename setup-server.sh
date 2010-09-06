@@ -35,8 +35,9 @@ ln -nfs /opt/ruby/bin/rake /usr/bin/rake
 ln -nfs /opt/ruby/bin/irb /usr/bin/irb
 
 # update rails
-gem install mysql --no-ri --no-rdoc
-gem install rails --no-ri --no-rdoc
+/opt/ruby/bin/gem update --system
+/opt/ruby/bin/gem install mysql --no-ri --no-rdoc
+/opt/ruby/bin/gem install rails --no-ri --no-rdoc
 ln -nfs /opt/ruby/bin/rails /bin/rails
 
 # install git
@@ -46,7 +47,7 @@ apt-get --yes --force-yes install git-core
 apt-get --yes --force-yes install apache2-prefork-dev
 apt-get --yes --force-yes install libapr1-dev
 mkdir /var/log/web
-gem install passenger
+/opt/ruby/bin/gem install passenger
 cd /opt/ruby/bin
 ./passenger-install-apache2-module --auto
 ln -nfs /opt/ruby/bin/passenger-status /bin/passenger-status
@@ -87,7 +88,7 @@ EOF
 
 /etc/init.d/apache2 restart
 
-gem install brightbox-server-tools
+/opt/ruby/bin/gem install brightbox-server-tools
 
 ln -nfs /opt/ruby/bin/railsapp-logrotate /usr/bin/railsapp-logrotate
 ln -nfs /opt/ruby/bin/railsapp-apache /usr/bin/railsapp-apache
