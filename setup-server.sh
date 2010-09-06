@@ -23,6 +23,9 @@ apt-get --yes --force-yes install libmysqlclient15-dev
 apt-get --yes --force-yes install monit
 apt-get --yes --force-yes install pwgen
 apt-get --yes --force-yes install imagemagick
+apt-get --yes --force-yes install libxml2-dev
+apt-get --yes --force-yes install libxslt-dev
+
 mkdir /etc/monit.d
 
 wget http://rubyforge.org/frs/download.php/64475/ruby-enterprise-1.8.7-20090928.tar.gz
