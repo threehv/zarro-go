@@ -32,16 +32,10 @@ wget http://rubyforge.org/frs/download.php/64475/ruby-enterprise-1.8.7-20090928.
 tar xzvf ruby-enterprise-1.8.7-20090928.tar.gz
 ./ruby-enterprise-1.8.7-20090928/installer --auto /opt/ruby
 
-ln -nfs /opt/ruby/bin/ruby /usr/bin/ruby
-ln -nfs /opt/ruby/bin/gem /usr/bin/gem
-ln -nfs /opt/ruby/bin/rake /usr/bin/rake
-ln -nfs /opt/ruby/bin/irb /usr/bin/irb
-
 # update rails
 /opt/ruby/bin/gem update --system
 /opt/ruby/bin/gem install mysql --no-ri --no-rdoc
 /opt/ruby/bin/gem install rails --no-ri --no-rdoc
-ln -nfs /opt/ruby/bin/rails /bin/rails
 
 # install git
 apt-get --yes --force-yes install git-core
@@ -101,6 +95,12 @@ ln -nfs /opt/ruby/bin/railsapp-maintenance /usr/bin/railsapp-maintenance
 ln -nfs /opt/ruby/bin/railsapp-mongrel /usr/bin/railsapp-mongrel
 ln -nfs /opt/ruby/bin/railsapp-monit /usr/bin/railsapp-monit
 ln -nfs /opt/ruby/bin/railsapp-nginx /usr/bin/railsapp-nginx
+
+ln -nfs /opt/ruby/bin/ruby /usr/bin/ruby
+ln -nfs /opt/ruby/bin/gem /usr/bin/gem
+ln -nfs /opt/ruby/bin/rake /usr/bin/rake
+ln -nfs /opt/ruby/bin/irb /usr/bin/irb
+ln -nfs /opt/ruby/bin/rails /bin/rails
 
 cd ~/zarro
 rm ruby-enterprise-1.8.7-20090928.tar.gz
