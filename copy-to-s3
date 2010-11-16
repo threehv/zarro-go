@@ -11,7 +11,7 @@ log.info 'Connected'
 
 threshold = Time.now - (1440 * 60)
 
-folders = [FOLDERS]
+folders = ['/etc/apache2']
 folders.each do | folder | 
   begin
     Find.find(folder) do | path | 
