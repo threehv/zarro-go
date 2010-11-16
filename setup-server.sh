@@ -57,8 +57,8 @@ ln -nfs /opt/ruby/bin/passenger-status /bin/passenger-status
 
 touch /etc/apache2/conf.d/passenger
 cat >> /etc/apache2/conf.d/passenger <<-EOF
-LoadModule passenger_module /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.2.15/ext/apache2/mod_passenger.so
-PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-2.2.15
+LoadModule passenger_module /opt/ruby/lib/ruby/gems/1.8/gems/passenger-3.0.0/ext/apache2/mod_passenger.so
+PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-3.0.0
 PassengerRuby /opt/ruby/bin/ruby
 PassengerMaxInstancesPerApp 2
 EOF
@@ -100,7 +100,7 @@ ln -nfs /opt/ruby/bin/railsapp-mongrel /usr/bin/railsapp-mongrel
 ln -nfs /opt/ruby/bin/railsapp-monit /usr/bin/railsapp-monit
 ln -nfs /opt/ruby/bin/railsapp-nginx /usr/bin/railsapp-nginx
 
-cd ~
+cd ~/zarro
 rm ruby-enterprise-1.8.7-20090928.tar.gz
 rm -rf ruby-enterprise-1.8.7-20090928/
 
