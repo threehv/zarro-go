@@ -4,7 +4,7 @@ require 'logger'
 require 'aws/s3'
 require 'find'
 
-log = Logger.new '/home/threehv/backup/s3.log', 'weekly'
+log = Logger.new '/home/threehv/zarro/s3.log', 'weekly'
 
 AWS::S3::Base.establish_connection!(:access_key_id => 'ACCESS', :secret_access_key => 'SECRET')
 log.info 'Connected'

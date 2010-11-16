@@ -92,6 +92,8 @@ EOF
 /etc/init.d/apache2 restart
 
 /opt/ruby/bin/gem install brightbox-server-tools
+/opt/ruby/bin/gem install aws-s3
+/opt/ruby/bin/gem install nokogiri
 
 ln -nfs /opt/ruby/bin/railsapp-logrotate /usr/bin/railsapp-logrotate
 ln -nfs /opt/ruby/bin/railsapp-apache /usr/bin/railsapp-apache
