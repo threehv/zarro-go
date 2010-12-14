@@ -1,108 +1,169 @@
-#!/bin/sh
+# All this done as root
 
-# system stuff
-mkdir /boot/grub
-apt-get --yes --force-yes update
-apt-get --yes --force-yes upgrade 
-apt-get --yes --force-yes install build-essential
+echo "Need to run as root"
+echo "Expect /etc/skel/.ssh to contain keys"
 
-# apache
-apt-get --yes --force-yes install apache2
+# Add brightbox repositories
+wget http://apt.brightbox.net/release.asc -O - | apt-key add -
+wget -c http://apt.brightbox.net/sources/lucid/brightbox.list -P /etc/apt/sources.list.d/
+wget -c http://apt.brightbox.net/sources/lucid/rubyee.list -P /etc/apt/sources.list.d/
+# Grab the packages
+aptitude update
 
-# ruby enterprise edition
-apt-get --yes --force-yes install ruby1.8-dev
-apt-get --yes --force-yes install libopenssl-ruby1.8
-apt-get --yes --force-yes install zlib1g-dev
-apt-get --yes --force-yes install libssl-dev
-apt-get --yes --force-yes install libreadline5-dev
-apt-get --yes --force-yes install libdbd-sqlite3-ruby1.8
-apt-get --yes --force-yes install sqlite3
-apt-get --yes --force-yes install libsqlite3-dev
-apt-get --yes --force-yes install mysql-server
-apt-get --yes --force-yes install libmysqlclient15-dev
-apt-get --yes --force-yes install monit
-apt-get --yes --force-yes install pwgen
-apt-get --yes --force-yes install imagemagick
-apt-get --yes --force-yes install libxml2-dev
-apt-get --yes --force-yes install libxslt-dev
-apt-get --yes --force-yes install libcurl4-openssl-dev
-mkdir /etc/monit.d
+# Install ruby/ruby-ee/rubygems
+aptitude -y install ruby1.8 ruby1.8-dev ri1.8 rdoc1.8 irb1.8 ruby1.8-elisp ruby1.8-examples libdbm-ruby1.8 libgdbm-ruby1.8 libtcltk-ruby1.8 libopenssl-ruby1.8 libreadline-ruby1.8 ruby ri rdoc irb rubygems1.8
 
-wget http://rubyforge.org/frs/download.php/64475/ruby-enterprise-1.8.7-20090928.tar.gz
-tar xzvf ruby-enterprise-1.8.7-20090928.tar.gz
-./ruby-enterprise-1.8.7-20090928/installer --auto /opt/ruby
+# Install some basic gems
+gem install rake
 
-# update rails
-/opt/ruby/bin/gem update --system
-/opt/ruby/bin/gem install mysql --no-ri --no-rdoc
-/opt/ruby/bin/gem install rails --no-ri --no-rdoc
+# Install git & sqlite3
+aptitude -y install git-core sqlite3 libsqlite3-dev
 
-# install git
-apt-get --yes --force-yes install git-core
+# Install apache
+mkdir -p /var/log/web
+aptitude -y install apache2 apache2-utils apache2-mpm-worker
 
-# set up passenger to allow apache to run a rails app
-apt-get --yes --force-yes install apache2-prefork-dev
-apt-get --yes --force-yes install libapr1-dev
-mkdir /var/log/web
-/opt/ruby/bin/gem install passenger
-cd /opt/ruby/bin
-./passenger-install-apache2-module --auto
-ln -nfs /opt/ruby/bin/passenger-status /bin/passenger-status
+echo 'ServerRoot "/etc/apache2"
 
-touch /etc/apache2/conf.d/passenger
-cat >> /etc/apache2/conf.d/passenger <<-EOF
-LoadModule passenger_module /opt/ruby/lib/ruby/gems/1.8/gems/passenger-3.0.0/ext/apache2/mod_passenger.so
-PassengerRoot /opt/ruby/lib/ruby/gems/1.8/gems/passenger-3.0.0
-PassengerRuby /opt/ruby/bin/ruby
-PassengerMaxInstancesPerApp 2
-EOF
+LockFile /var/lock/apache2/accept.lock
 
-rm /var/www/index.html
-touch /var/www/index.html
-cat >> /var/www/index.html <<-EOF
-<html> <body> <h1> Server is go! </h1> </body> </html>
-EOF
+PidFile ${APACHE_PID_FILE}
 
-rm /etc/apache2/sites-enabled/000-default
-touch /etc/apache2/sites-enabled/000-default
-cat >> /etc/apache2/sites-enabled/000-default <<-EOF
-<VirtualHost *:80>
-  ServerName localhost
-  DocumentRoot /var/www
+# Timeout: The number of seconds before receives and sends time out.
+Timeout 300
 
-  <Directory "/var/www">
-    Options FollowSymLinks
-    AllowOverride None
+# KeepAlive: Whether or not to allow persistent connections (more than
+# one request per connection). Set to "Off" to deactivate.
+KeepAlive On
+
+# MaxKeepAliveRequests: The maximum number of requests to allow
+# during a persistent connection. Set to 0 to allow an unlimited amount.
+# We recommend you leave this number high, for maximum performance.
+MaxKeepAliveRequests 100
+
+# KeepAliveTimeout: Number of seconds to wait for the next request from the
+# same client on the same connection.
+KeepAliveTimeout 15
+
+# prefork MPM
+# StartServers: number of server processes to start
+# MinSpareServers: minimum number of server processes which are kept spare
+# MaxSpareServers: maximum number of server processes which are kept spare
+# MaxClients: maximum number of server processes allowed to start
+# MaxRequestsPerChild: maximum number of requests a server process serves
+<IfModule mpm_prefork_module>
+    StartServers          5
+    MinSpareServers       5
+    MaxSpareServers      10
+    MaxClients          150
+    MaxRequestsPerChild   0
+</IfModule>
+
+# worker MPM
+# StartServers: initial number of server processes to start
+# MaxClients: maximum number of simultaneous client connections
+# MinSpareThreads: minimum number of worker threads which are kept spare
+# MaxSpareThreads: maximum number of worker threads which are kept spare
+# ThreadsPerChild: constant number of worker threads in each server process
+# MaxRequestsPerChild: maximum number of requests a server process serves
+<IfModule mpm_worker_module>
+    StartServers          2
+    MaxClients          150
+    MinSpareThreads      25
+    MaxSpareThreads      75 
+    ThreadsPerChild      25
+    MaxRequestsPerChild   0
+</IfModule>
+
+# These need to be set in /etc/apache2/envvars
+User ${APACHE_RUN_USER}
+Group ${APACHE_RUN_GROUP}
+
+AccessFileName .htaccess
+
+# The following lines prevent .htaccess and .htpasswd files from being 
+# viewed by Web clients. 
+<Files ~ "^\.ht">
     Order allow,deny
-    Allow from all
-  </Directory>
+    Deny from all
+    Satisfy all
+</Files>
 
-  ErrorLog /var/log/apache2/error.log
-  CustomLog /var/log/apache2/access.log combined
+DefaultType text/plain
 
-</VirtualHost>
-EOF
 
+HostnameLookups Off
+
+ErrorLog /var/log/apache2/error.log
+
+LogLevel warn
+
+# Include module configuration:
+Include /etc/apache2/mods-enabled/*.load
+Include /etc/apache2/mods-enabled/*.conf
+
+# Include all the user configurations:
+Include /etc/apache2/httpd.conf
+
+# Include ports listing
+Include /etc/apache2/ports.conf
+
+LogFormat "%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %>s %O" common
+LogFormat "%{Referer}i -> %U" referer
+LogFormat "%{User-agent}i" agent
+
+ServerTokens Minimal
+
+ServerSignature On
+
+# Include generic snippets of statements
+Include /etc/apache2/conf.d/
+
+ServerName localhost
+NameVirtualHost *:80
+
+# Include the virtual host configurations:
+Include /etc/apache2/sites-enabled/
+' > /etc/apache2/apache2.conf
+# Restart apache
 /etc/init.d/apache2 restart
 
-/opt/ruby/bin/gem install brightbox-server-tools
-/opt/ruby/bin/gem install aws-s3
-/opt/ruby/bin/gem install nokogiri
+# Install postfix for monit to use
+aptitude -y install postfix # hit ok on the config screens, accept the default
 
-ln -nfs /opt/ruby/bin/railsapp-logrotate /usr/bin/railsapp-logrotate
-ln -nfs /opt/ruby/bin/railsapp-apache /usr/bin/railsapp-apache
-ln -nfs /opt/ruby/bin/railsapp-maintenance /usr/bin/railsapp-maintenance
-ln -nfs /opt/ruby/bin/railsapp-mongrel /usr/bin/railsapp-mongrel
-ln -nfs /opt/ruby/bin/railsapp-monit /usr/bin/railsapp-monit
-ln -nfs /opt/ruby/bin/railsapp-nginx /usr/bin/railsapp-nginx
+# Install monit
+aptitude -y install monit
+mv /etc/monit/monitrc /etc/monit/monitrc.dpkg-dist
 
-ln -nfs /opt/ruby/bin/ruby /usr/bin/ruby
-ln -nfs /opt/ruby/bin/gem /usr/bin/gem
-ln -nfs /opt/ruby/bin/rake /usr/bin/rake
-ln -nfs /opt/ruby/bin/irb /usr/bin/irb
-ln -nfs /opt/ruby/bin/rails /bin/rails
+echo "# Monit configuration
+# for more details see http://wiki.brightbox.co.uk/Support/Monit
+set daemon 30
 
-cd ~/zarro
-rm ruby-enterprise-1.8.7-20090928.tar.gz
-rm -rf ruby-enterprise-1.8.7-20090928/
+set mailserver localhost
 
+include /etc/monit/conf.d/*.monitrc
+" > /etc/monit/monitrc
+
+echo "check device rootfs with path /dev/vda1
+  if space usage > 90% 5 times within 15 cycles then alert
+  mode passive
+" > /etc/monit/conf.d/disk-space.monitrc
+
+echo "set logfile syslog facility log_daemon 
+set httpd port 2812 and
+    use address localhost # and only accept connection from localhost
+    allow localhost       # allow localhost to connect to the server and
+" > /etc/monit/conf.d/general.monitrc
+
+echo "set alert alerts@3hv.co.uk
+" > /etc/monit/conf.d/email-alerts.monitrc
+
+# Mark monit as being ok to start
+cat /etc/default/monit | sed -e "s/startup=0/startup=1/" > /etc/default/monit.new
+mv /etc/default/monit.new /etc/default/monit
+# Start monit
+/etc/init.d/monit start
+
+aptitude -y install mysql-server libmysqlclient15-dev imagemagick libxml2-dev libxslt-dev libcurl4-openssl-dev
