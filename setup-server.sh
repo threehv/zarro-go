@@ -167,3 +167,5 @@ mv /etc/default/monit.new /etc/default/monit
 /etc/init.d/monit start
 
 aptitude -y install mysql-server libmysqlclient15-dev imagemagick libxml2-dev libxslt-dev libcurl4-openssl-dev
+
+aptitude -y install libapache2-mod-passenger
