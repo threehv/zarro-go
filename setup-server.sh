@@ -11,7 +11,7 @@ wget -c http://apt.brightbox.net/sources/lucid/rubyee.list -P /etc/apt/sources.l
 aptitude update
 
 # Install ruby/ruby-ee/rubygems
-aptitude -y install ruby1.8 ruby1.8-dev ri1.8 rdoc1.8 irb1.8 ruby1.8-elisp ruby1.8-examples libdbm-ruby1.8 libgdbm-ruby1.8 libtcltk-ruby1.8 libopenssl-ruby1.8 libreadline-ruby1.8 ruby ri rdoc irb rubygems1.8
+aptitude -y install ruby1.8 ruby1.8-dev ri1.8 rdoc1.8 irb1.8 ruby1.8-examples libdbm-ruby1.8 libgdbm-ruby1.8 libtcltk-ruby1.8 libopenssl-ruby1.8 libreadline-ruby1.8 ruby ri rdoc irb rubygems1.8
 
 # Install some basic gems
 gem install rake
