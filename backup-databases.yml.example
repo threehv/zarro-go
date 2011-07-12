@@ -1,0 +1,7 @@
+username: root
+password: 
+destination: /home/threehv/dbbackup/
+databases:
+  1: db1
+  2: db2
+  

@@ -1,4 +1,40 @@
-mysqldump -u root --password=PASSWORD --all-databases > /home/threehv/dbbackup/backup.sql
-gzip -f /home/threehv/dbbackup/backup.sql
-#mysqldump -u root --password=PASSWORD DATABASE > /home/threehv/dbbackup/BACKUP.sql
-gzip -f /home/threehv/dbbackup/BACKUP.sql
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'logger'
+
+@log = Logger.new 'backup-databases.log', 'weekly'
+
+@log.info "Loading configuration..."
+@config = YAML.load File.open('backup-databases.yml', 'r')
+
+@username = @config["username"]
+@password = @config["password"]
+@destination = @config["destination"]
+@databases = @config["databases"]
+@date = Date.today.to_s
+
+@filename = File.join(@destination, "all-databases-#{@date}.sql")
+@log.info "...backing up all databases to #{@filename}"
+`mysqldump -u #{@username} --password=#{@password} --all-databases > #{@filename}`
+@log.info "...and zipping"
+`gzip -f #{@filename}`
+@databases.each do | key, database_name | 
+  @filename = File.join(@destination, "#{database_name}-#{@date}.sql")
+  @log.info "...backing up #{database_name} to #{@filename}"
+  `mysqldump -u #{@username} --password=#{@password} #{database_name} > #{@filename}`
+  @log.info "...and zipping"
+  `gzip -f #{@filename}`
+end
+@log.info "...all databases backed up"
+@log.info "...looking for old files to delete"
+
+#@threshold = Time.now - (60 * 60 * 24 * 60) # 60 days
+@threshold = Time.now
+Dir[File.join(@destination, "*.sql.gz")].each do | backup_name |
+  f = File.new backup_name
+  @log.info "...examining #{backup_name}"
+  if f.mtime < @threshold
+    @log.info "...to be deleted"
+    `rm #{backup_name}`
+  end
+end

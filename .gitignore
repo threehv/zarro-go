@@ -1,1 +1,4 @@
+s3.log
+backup-databases.log
+backup-databases.yml
 mysql.cnf
