@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'logger'
+require 'yaml'
 
 @log = Logger.new 'backup-databases.log', 'weekly'
 
