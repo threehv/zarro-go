@@ -18,6 +18,7 @@ require 'logger'
 `mysqldump -u #{@username} --password=#{@password} --all-databases > #{@filename}`
 @log.info "...and zipping"
 `gzip -f #{@filename}`
+
 @databases.each do | key, database_name | 
   @filename = File.join(@destination, "#{database_name}-#{@date}.sql")
   @log.info "...backing up #{database_name} to #{@filename}"
@@ -25,11 +26,12 @@ require 'logger'
   @log.info "...and zipping"
   `gzip -f #{@filename}`
 end
-@log.info "...all databases backed up"
-@log.info "...looking for old files to delete"
 
-#@threshold = Time.now - (60 * 60 * 24 * 60) # 60 days
-@threshold = Time.now
+@log.info "...all databases backed up"
+
+@log.info "...looking for old files to delete"
+@threshold = Time.now - (60 * 60 * 24 * 60) # 60 days
+
 Dir[File.join(@destination, "*.sql.gz")].each do | backup_name |
   f = File.new backup_name
   @log.info "...examining #{backup_name}"
@@ -38,3 +40,5 @@ Dir[File.join(@destination, "*.sql.gz")].each do | backup_name |
     `rm #{backup_name}`
   end
 end
+
+@log.info "...done"
