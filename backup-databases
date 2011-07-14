@@ -33,7 +33,7 @@ end
 @log.info "...looking for old files to delete"
 @threshold = Time.now - (60 * 60 * 24 * 60) # 60 days
 
-Dir[File.join(@destination, "*.sql.gz")].each do | backup_name |
+Dir[File.join(@destination, "*")].each do | backup_name |
   f = File.new backup_name
   @log.info "...examining #{backup_name}"
   if f.mtime < @threshold
