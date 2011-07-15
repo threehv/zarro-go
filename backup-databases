@@ -3,10 +3,10 @@ require 'rubygems'
 require 'logger'
 require 'yaml'
 
-@log = Logger.new 'backup-databases.log', 'weekly'
+@log = Logger.new '/home/threehv/dbbackup/backup-databases.log', 'weekly'
 
 @log.info "Loading configuration..."
-@config = YAML.load File.open('backup-databases.yml', 'r')
+@config = YAML.load File.open('/home/threehv/zarro/backup-databases.yml', 'r')
 
 @username = @config["username"]
 @password = @config["password"]
